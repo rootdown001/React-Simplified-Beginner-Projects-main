@@ -1,10 +1,20 @@
 import { useArray } from "./useArray.js";
 
 const INITIAL_ARRAY = [1, 2, 3];
-// const INITIAL_ARRAY = () => [1, 2, 3]
+// const INITIAL_ARRAY = () => [1, 2, 3];
 
 function App() {
-  const { array, set, push, replace, filter } = useArray(INITIAL_ARRAY);
+  const {
+    array,
+    set,
+    push,
+    replace,
+    filter,
+    remove,
+    clear,
+    reset,
+    addNumAtIndex,
+  } = useArray(INITIAL_ARRAY);
 
   return (
     <>
@@ -26,9 +36,10 @@ function App() {
         <button onClick={() => filter((n) => n < 3)}>
           Keep numbers less than 3
         </button>
-        {/* <button onClick={() => remove(1)}>Remove second element</button>
+        <button onClick={() => remove(1)}>Remove second element</button>
         <button onClick={clear}>Clear</button>
-        <button onClick={reset}>Reset</button> */}
+        <button onClick={reset}>Reset</button>
+        <button onClick={() => addNumAtIndex(1, 2)}>Add 1 at index 2</button>
       </div>
     </>
   );
