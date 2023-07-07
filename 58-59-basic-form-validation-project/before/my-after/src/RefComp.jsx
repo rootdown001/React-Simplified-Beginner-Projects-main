@@ -1,11 +1,17 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 
 import React from "react";
 
 export default function StateComp() {
-  const [emailEntry, setEmailEntry] = useState("test@test.com");
-  const [passwordEntry, setPasswordEntry] = useState("Password123!");
+  //  const [emailEntry, setEmailEntry] = useState("test@test.com");
+  //  const [passwordEntry, setPasswordEntry] = useState("Password123!");
+
+  const [emailErrors, setEmailErrors] = useState([]);
+  const [passwordErrors, setPasswordErrors] = useState([]);
   const [isAfterSubmit, setIsAfterSubmit] = useState(false);
+
+  const emailRef = useRef("test@test.com");
+  const passwordRef = useRef("Password123!");
 
   function checkEmail(email) {
     const errors = [];
@@ -49,30 +55,33 @@ export default function StateComp() {
     return errors;
   }
 
-  const emailErrors = useMemo(() => {
-    return isAfterSubmit ? checkEmail(emailEntry) : "";
-  }, [isAfterSubmit, emailEntry]);
+  //   const emailErrors = useMemo(() => {
+  //     return isAfterSubmit ? checkEmail(emailEntry) : "";
+  //   }, [isAfterSubmit, emailEntry]);
 
-  const passwordErrors = useMemo(() => {
-    return isAfterSubmit ? checkPassword(passwordEntry) : [];
-  }, [isAfterSubmit, passwordEntry]);
+  //   const passwordErrors = useMemo(() => {
+  //     return isAfterSubmit ? checkPassword(passwordEntry) : [];
+  //   }, [isAfterSubmit, passwordEntry]);
 
   function entryHandler(e) {
     e.preventDefault();
     setIsAfterSubmit(true);
 
-    const emailResults = checkEmail(emailEntry);
-    const passwordResults = checkPassword(passwordEntry);
+    const emailResults = checkEmail(emailRef.current.value);
+    const passwordResults = checkPassword(passwordRef.current.value);
+
+    setEmailErrors(emailResults);
+    setPasswordErrors(passwordResults);
 
     if (emailResults.length === 0 && passwordResults.length === 0) {
       alert("Success");
     }
   }
 
-  // useEffect(() => {
-  //   console.log("email: ", emailEntry);
-  //   console.log("email: ", passwordEntry);
-  // }, [emailEntry, passwordEntry]);
+  //   useEffect(() => {
+  //     console.log("email: ", emailEntry);
+  //     console.log("email: ", passwordEntry);
+  //   }, [emailEntry, passwordEntry]);
 
   return (
     <>
@@ -85,9 +94,20 @@ export default function StateComp() {
             className="input"
             type="email"
             id="email"
+            ref={emailRef}
+            onChange={
+              isAfterSubmit
+                ? (e) => setEmailErrors(checkEmail(e.target.value))
+                : undefined
+            }
+          />
+          {/* <input
+            className="input"
+            type="email"
+            id="email"
             value={emailEntry}
             onChange={(e) => setEmailEntry(e.target.value)}
-          />
+          /> */}
           {emailErrors.length > 0 && (
             <div className="msg">{emailErrors.join(", ")}</div>
           )}
@@ -100,11 +120,22 @@ export default function StateComp() {
           </label>
           <input
             className="input"
+            type="password"
+            id="password"
+            ref={passwordRef}
+            onChange={
+              isAfterSubmit
+                ? (e) => setPasswordErrors(checkPassword(e.target.value))
+                : undefined
+            }
+          />
+          {/* <input
+            className="input"
             value={passwordEntry}
             onChange={(e) => setPasswordEntry(e.target.value)}
             type="password"
             id="password"
-          />
+          /> */}
           {passwordErrors.length > 0 && (
             <div className="msg">{passwordErrors.join(", ")}</div>
           )}
