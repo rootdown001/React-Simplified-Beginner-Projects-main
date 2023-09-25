@@ -1,13 +1,13 @@
-import { FormGroup } from "./FormGroup"
-import ReactSelect from "react-select"
-import "./styles.css"
-import { useController, useForm } from "react-hook-form"
+import { FormGroup } from "./FormGroup";
+import ReactSelect from "react-select";
+import "./styles.css";
+import { useController, useForm } from "react-hook-form";
 
 const COUNTRY_OPTIONS = [
   { label: "United States", value: "US" },
   { label: "India", value: "IN" },
   { label: "Mexico", value: "MX" },
-]
+];
 
 function App() {
   const {
@@ -15,17 +15,19 @@ function App() {
     handleSubmit,
     formState: { errors },
     control,
-  } = useForm()
+  } = useForm();
 
   const { field: countryField } = useController({
     name: "country",
     control,
     rules: { required: { value: true, message: "Required" } },
-  })
+  });
+
+  console.log(typeof register);
 
   function onSubmit(data) {
-    console.log(data)
-    alert("Success")
+    console.log(data);
+    alert("Success");
   }
 
   return (
@@ -40,9 +42,9 @@ function App() {
           id="email"
           {...register("email", {
             required: { value: true, message: "Required" },
-            validate: value => {
+            validate: (value) => {
               if (!value.endsWith("@webdevsimplified.com")) {
-                return "Must end with @webdevsimplified.com"
+                return "Must end with @webdevsimplified.com";
               }
             },
           })}
@@ -60,19 +62,19 @@ function App() {
             required: { value: true, message: "Required" },
             minLength: { value: 10, message: "Must be at least 10 characters" },
             validate: {
-              hasLowerCase: value => {
+              hasLowerCase: (value) => {
                 if (!value.match(/[a-z]/)) {
-                  return "Must include at least 1 lowercase letter"
+                  return "Must include at least 1 lowercase letter";
                 }
               },
-              hasUpperCase: value => {
+              hasUpperCase: (value) => {
                 if (!value.match(/[A-Z]/)) {
-                  return "Must include at least 1 uppercase letter"
+                  return "Must include at least 1 uppercase letter";
                 }
               },
-              hasNumber: value => {
+              hasNumber: (value) => {
                 if (!value.match(/[0-9]/)) {
-                  return "Must include at least 1 number"
+                  return "Must include at least 1 number";
                 }
               },
             },
@@ -95,7 +97,7 @@ function App() {
         Submit
       </button>
     </form>
-  )
+  );
 }
 
-export default App
+export default App;
