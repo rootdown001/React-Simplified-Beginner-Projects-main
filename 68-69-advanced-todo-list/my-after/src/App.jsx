@@ -1,66 +1,88 @@
-import { useState } from "react"
-import "./styles.css"
-import { TodoItem } from "./TodoItem"
+import { createContext, useEffect, useReducer, useState } from "react";
+import "./styles.css";
+import { TodoItem } from "./TodoItem";
+import NewTodoForm from "./NewTodoForm";
+import TodoList from "./TodoList";
+
+export const TodoContext = createContext();
+
+const LOCAL_STORAGE_KEY = "TODOS";
+
+const ACTIONS = {
+  ADD: "ADD",
+  UPDATE: "UPDATE",
+  TOGGLE: "TOGGLE",
+  DELETE: "DELETE",
+};
+
+const initialTodos = [
+  { name: "Item 1", completed: false, id: crypto.randomUUID() },
+  { name: "Item 2", completed: false, id: crypto.randomUUID() },
+  { name: "Item 3", completed: false, id: crypto.randomUUID() },
+];
+
+function reducer(todos, { type, payload }) {
+  switch (type) {
+    case ACTIONS.ADD:
+      return [
+        ...todos,
+        { name: payload.name, completed: false, id: crypto.randomUUID() },
+      ];
+    case ACTIONS.TOGGLE:
+      return todos.map((todo) => {
+        if (todo.id === payload.id)
+          return { ...todo, completed: payload.completed };
+        return todo;
+      });
+    case ACTIONS.DELETE:
+      return todos.filter((todo) => todo.id !== payload.id);
+
+    default:
+      throw new Error(`No action found for ${type}`);
+  }
+
+  return state;
+}
 
 function App() {
-  const [newTodoName, setNewTodoName] = useState("")
-  const [todos, setTodos] = useState([])
+  const [todos, dispatch] = useReducer(
+    reducer,
+    initialTodos,
+    (initialTodos) => {
+      const value = localStorage.getItem(LOCAL_STORAGE_KEY);
 
-  function addNewTodo() {
-    if (newTodoName === "") return
+      //  console.log(value);
+      if (value === "[]") return initialTodos;
+      return JSON.parse(value);
+    }
+  );
 
-    setTodos(currentTodos => {
-      return [
-        ...currentTodos,
-        { name: newTodoName, completed: false, id: crypto.randomUUID() },
-      ]
-    })
-    setNewTodoName("")
+  useEffect(() => {
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(todos));
+  }, [todos]);
+
+  function addNewTodo(name) {
+    dispatch({ type: ACTIONS.ADD, payload: { name } });
   }
 
   function toggleTodo(todoId, completed) {
-    setTodos(currentTodos => {
-      return currentTodos.map(todo => {
-        if (todo.id === todoId) return { ...todo, completed }
-
-        return todo
-      })
-    })
+    dispatch({ type: ACTIONS.TOGGLE, payload: { id: todoId, completed } });
   }
 
+  // function editTodo(todoId) {
+
+  // }
+
   function deleteTodo(todoId) {
-    setTodos(currentTodos => {
-      return currentTodos.filter(todo => todo.id !== todoId)
-    })
+    dispatch({ type: ACTIONS.DELETE, payload: { id: todoId } });
   }
 
   return (
-    <>
-      <ul id="list">
-        {todos.map(todo => {
-          return (
-            <TodoItem
-              key={todo.id}
-              {...todo}
-              toggleTodo={toggleTodo}
-              deleteTodo={deleteTodo}
-            />
-          )
-        })}
-      </ul>
-
-      <div id="new-todo-form">
-        <label htmlFor="todo-input">New Todo</label>
-        <input
-          type="text"
-          id="todo-input"
-          value={newTodoName}
-          onChange={e => setNewTodoName(e.target.value)}
-        />
-        <button onClick={addNewTodo}>Add Todo</button>
-      </div>
-    </>
-  )
+    <TodoContext.Provider value={{ todos, toggleTodo, deleteTodo, addNewTodo }}>
+      <TodoList />
+      <NewTodoForm></NewTodoForm>
+    </TodoContext.Provider>
+  );
 }
 
-export default App
+export default App;
