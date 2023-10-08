@@ -1,8 +1,8 @@
-import { createContext, useEffect, useReducer, useState } from "react";
+import { createContext, useEffect, useReducer } from "react";
 import "./styles.css";
-import { TodoItem } from "./TodoItem";
 import NewTodoForm from "./NewTodoForm";
 import TodoList from "./TodoList";
+import TodoFilterForm from "./TodoFilterForm";
 
 export const TodoContext = createContext();
 
@@ -79,6 +79,7 @@ function App() {
 
   return (
     <TodoContext.Provider value={{ todos, toggleTodo, deleteTodo, addNewTodo }}>
+      <TodoFilterForm />
       <TodoList />
       <NewTodoForm></NewTodoForm>
     </TodoContext.Provider>

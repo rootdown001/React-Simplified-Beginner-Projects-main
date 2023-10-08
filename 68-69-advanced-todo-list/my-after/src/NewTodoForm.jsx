@@ -4,10 +4,6 @@ import { TodoContext } from "./App";
 export default function NewTodoForm() {
   const nameRef = useRef();
   const { addNewTodo } = useContext(TodoContext);
-  console.log(
-    "🚀 ~ file: NewTodoForm.jsx:7 ~ NewTodoForm ~ addNewTodo:",
-    addNewTodo
-  );
 
   function handleSubmit(e) {
     e.preventDefault();
