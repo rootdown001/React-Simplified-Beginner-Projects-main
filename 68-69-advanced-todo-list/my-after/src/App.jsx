@@ -21,6 +21,7 @@ const initialTodos = [
   { name: "Item 3", completed: false, id: crypto.randomUUID() },
 ];
 
+// use reducer function instead of useState
 function reducer(todos, { type, payload }) {
   switch (type) {
     case ACTIONS.ADD:
@@ -32,6 +33,11 @@ function reducer(todos, { type, payload }) {
       return todos.map((todo) => {
         if (todo.id === payload.id)
           return { ...todo, completed: payload.completed };
+        return todo;
+      });
+    case ACTIONS.UPDATE:
+      return todos.map((todo) => {
+        if (todo.id === payload.id) return { ...todo, name: payload.name };
         return todo;
       });
     case ACTIONS.DELETE:
@@ -48,15 +54,16 @@ function App() {
   const [todos, dispatch] = useReducer(
     reducer,
     initialTodos,
+    // add initial function to get from local storage
     (initialTodos) => {
       const value = localStorage.getItem(LOCAL_STORAGE_KEY);
 
-      //  console.log(value);
       if (value === "[]") return initialTodos;
       return JSON.parse(value);
     }
   );
 
+  // set in local storage when todos array changes
   useEffect(() => {
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(todos));
   }, [todos]);
@@ -69,16 +76,18 @@ function App() {
     dispatch({ type: ACTIONS.TOGGLE, payload: { id: todoId, completed } });
   }
 
-  // function editTodo(todoId) {
-
-  // }
+  function updateTodoName(todoId, name) {
+    dispatch({ type: ACTIONS.UPDATE, payload: { id: todoId, name } });
+  }
 
   function deleteTodo(todoId) {
     dispatch({ type: ACTIONS.DELETE, payload: { id: todoId } });
   }
 
   return (
-    <TodoContext.Provider value={{ todos, toggleTodo, deleteTodo, addNewTodo }}>
+    <TodoContext.Provider
+      value={{ todos, toggleTodo, deleteTodo, addNewTodo, updateTodoName }}
+    >
       <TodoFilterForm />
       <TodoList />
       <NewTodoForm></NewTodoForm>
